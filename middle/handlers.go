@@ -2,8 +2,11 @@ package middle
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"go-postgres-yt/models"
 	"log"
+	"net/http"
 	"os"
 
 	_ "github.com/joho/godotenv"
@@ -33,18 +36,29 @@ func CreateConnection() *sql.DB {
 	return db
 }
 
-func CreateStock() {
+func CreateStock(w http.ResponseWriter, r *http.Request) {
+	var stock models.Stock
+
+	err := json.NewDecoder(r.Body).Decode(&stock)
+	if err != nil {
+		log.Fatal("unable to decode the request body")
+	}
+	insertID := inspectStock(stock)
+	res := response{
+		ID:      insertID,
+		Message: "stock created successfully",
+	}
+	json.NewEncoder(w).Encode(res)
+}
+func GetStock(w http.ResponseWriter, r *http.Request) {
 
 }
-func GetStock() {
+func GetAllStock(w http.ResponseWriter, r *http.Request) {
 
 }
-func GetAllStock() {
+func UpdateStock(w http.ResponseWriter, r *http.Request) {
 
 }
-func UpdateStock() {
-
-}
-func DeleteStock() {
+func DeleteStock(w http.ResponseWriter, r *http.Request) {
 
 }
