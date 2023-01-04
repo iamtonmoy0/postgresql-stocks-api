@@ -8,7 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv"
 )
 
@@ -41,7 +43,7 @@ func CreateStock(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&stock)
 	if err != nil {
-		log.Fatal("unable to decode the request body")
+		log.Fatal("unable to decode the request body. %v", err)
 	}
 	insertID := inspectStock(stock)
 	res := response{
@@ -51,6 +53,15 @@ func CreateStock(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 func GetStock(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		log.Fatal("unable to convert the string into int. %v", err)
+	}
+	stock, err := getStock(int64(id))
+	if err != nil {
+		log.Fatal("unable to get stock . %v", err)
+	}
 
 }
 func GetAllStock(w http.ResponseWriter, r *http.Request) {
