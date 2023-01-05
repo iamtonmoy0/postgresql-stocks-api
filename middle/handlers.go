@@ -83,6 +83,13 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("unable to decode the request body . %v", err)
 	}
+	updateRows := updateStock(int64(id), stock)
+	msg := fmt.Sprintf("stock updated successfully . total rows / records affected %v", updateRows)
+	res := response{
+		ID:      int64(id),
+		message: msg,
+	}
+	json.NewDecoder(w).Encode(res)
 }
 func DeleteStock(w http.ResponseWriter, r *http.Request) {
 
