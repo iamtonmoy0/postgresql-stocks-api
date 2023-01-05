@@ -65,10 +65,24 @@ func GetStock(w http.ResponseWriter, r *http.Request) {
 
 }
 func GetAllStock(w http.ResponseWriter, r *http.Request) {
-
+	stocks, err := getAllStocks()
+	if err != nil {
+		log.Fatal("unable to get all the stocks %v ", err)
+	}
+	json.NewEncoder(w).Encode(stocks)
 }
 func UpdateStock(w http.ResponseWriter, r *http.Request) {
 
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		log.Fatal("unable to convert string into int. %v", err)
+	}
+	var stock models.Stock
+	err = json.NewDecoder(r.Body).Decode(&stock)
+	if err != nil {
+		log.Fatalf("unable to decode the request body . %v", err)
+	}
 }
 func DeleteStock(w http.ResponseWriter, r *http.Request) {
 
