@@ -92,5 +92,43 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(w).Encode(res)
 }
 func DeleteStock(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.ParseInt(params["id"])
+	if err != nil {
+		log.Fatalf("unable to convert string to int. %v", err)
+	}
+	deleteRows := deleteStock(int64(id))
+	msg := fmt.Sprintf("stock deleted successfully.Total rows/records %v", deleteRows)
+	res := response{
+		ID:      int64(id),
+		Message: msg,
+	}
+	json.NewEncoder(w).Encode(res)
+}
+func insertStock(stock models.Stock) int64 {
+	db := createConnection()
+	defer db.Close()
+	sqlStatement := `INSERT INTO STOCKS (name,price,company) VALUES($1,$2,$3)RETURNING`
+	var id int64
+
+	db.QueryRow(sqlStatement, stock.Name, stock.Price, stock.Company).Scan(&oid)
+	if err != nil {
+		log.Fatalf("unable to execute the query. %v", err)
+
+	}
+	fmt.Printf("inserted a single record %v", id)
+	return id
+}
+
+func getStock(id int64) (models.Stock, error) {
+
+}
+func getAllStocks() ([]models.Stock, error) {
+
+}
+func updateStock(id int64, stock models.Stock) int64 {
+
+}
+func deleteStock(id int64) int64 {
 
 }
