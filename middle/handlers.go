@@ -11,7 +11,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	_ "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type response struct {
@@ -20,7 +21,7 @@ type response struct {
 }
 
 func CreateConnection() *sql.DB {
-	err := gotdotenv.Load(".env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("err loading .env file")
 	}
@@ -87,13 +88,13 @@ func UpdateStock(w http.ResponseWriter, r *http.Request) {
 	msg := fmt.Sprintf("stock updated successfully . total rows / records affected %v", updateRows)
 	res := response{
 		ID:      int64(id),
-		message: msg,
+		Message: msg,
 	}
 	json.NewDecoder(w).Encode(res)
 }
 func DeleteStock(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	id, err := strconv.ParseInt(params["id"])
+	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		log.Fatalf("unable to convert string to int. %v", err)
 	}
@@ -163,8 +164,34 @@ func getAllStocks() ([]models.Stock, error) {
 func updateStock(id int64, stock models.Stock) int64 {
 	db := createConnection()
 	defer db.Close()
-	sqlStatement := `SELECT * FROM 	stocks`
+	sqlStatement := `UPDATE stocks SET name=$2,price=$3,company=$4 WHERE stockid=$1 `
+	db.Exec(sqlStatement, id, stock.Name, stock.Price, stock.Company)
+	if err != nil {
+		log.Fatalf("unable to execute the query %v", err)
+
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		fmt.Printf("Error while checking the affected rows.%v", err)
+	}
+	fmt.Printf("total rows/records affected %v", rowsAffected)
+	return rowsAffected
 }
 func deleteStock(id int64) int64 {
+
+	db := createConnection()
+	defer db.Close()
+	sqlStatement := `DELETE FROM stocks  WHERE stockid=$1 `
+	res, err := db.Exec(sqlStatement, id)
+	if err != nil {
+		log.Fatalf("unable to execute the query %v", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		fmt.Printf("Error while checking the affected rows.%v", err)
+	}
+	fmt.Printf("total rows/records affected %v", rowsAffected)
+	return rowsAffected
 
 }

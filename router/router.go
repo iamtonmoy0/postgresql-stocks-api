@@ -1,6 +1,10 @@
 package router
 
-import "github.com/gorilla/mux"
+import (
+	"go-postgres-yt/middle"
+
+	"github.com/gorilla/mux"
+)
 
 func Router() *mux.Router {
 	router := mux.NewRouter()
@@ -9,4 +13,5 @@ func Router() *mux.Router {
 	router.Handlefunc("/api/newstock", middle.CreateStock).Methods("POST", "OPTIONS")
 	router.Handlefunc("/api/stock/{id}", middle.UpdateStock).Methods("PUT", "OPTIONS")
 	router.Handlefunc("/api/deletestock/{id}", middle.DeleteStock).Methods("DELETE", "OPTIONS")
+	return router
 }
