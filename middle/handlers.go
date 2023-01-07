@@ -150,18 +150,18 @@ func getAllStocks() ([]models.Stock, error) {
 	}
 
 	defer rows.Close()
-	for  rows.Next(){
-		car stock models.Stock
+	for rows.Next() {
+		var stock models.Stock
 		err = row.Scan(&stock.StockID, &stock.Name, &stock.Price, &stock.Company)
-		if err!= nil{
-			log.Fatalf("unable to scan the row %v",err)
-	        }
-	      stocks = append(stocks,stock)
+		if err != nil {
+			log.Fatalf("unable to scan the row %v", err)
+		}
+		stocks = append(stocks, stock)
 	}
-return stocks ,err
+	return stocks, err
 }
 func updateStock(id int64, stock models.Stock) int64 {
-db := createConnection()
+	db := createConnection()
 	defer db.Close()
 	sqlStatement := `SELECT * FROM 	stocks`
 }
