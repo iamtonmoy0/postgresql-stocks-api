@@ -121,13 +121,49 @@ func insertStock(stock models.Stock) int64 {
 }
 
 func getStock(id int64) (models.Stock, error) {
+	db := createConnection()
+	defer db.Close()
+	var stock models.Stock
 
+	sqlStatement := `SELECT * FROM stocks WHERE stockid =$1`
+	row := db.QueryRow(sqlStatement, id)
+	err := row.Scan(&stock.StockID, &stock.Name, &stock.Price, &stock.Company)
+	switch err {
+	case sql.ErrNoRows:
+		fmt.Println("now rows were returned!")
+		return stock, nil
+	case nil:
+		return stock, nil
+	default:
+		log.Fatalf("unable to scan the row . %v", err)
+	}
+	return stock, err
 }
 func getAllStocks() ([]models.Stock, error) {
+	db := createConnection()
+	defer db.Close()
+	var stocks []models.Stock
+	sqlStatement := `SELECT * FROM 	stocks`
+	rows, err := db.Query(sqlStatement)
+	if err != nil {
+		log.Fatal("unable to execute query.%v", err)
+	}
 
+	defer rows.Close()
+	for  rows.Next(){
+		car stock models.Stock
+		err = row.Scan(&stock.StockID, &stock.Name, &stock.Price, &stock.Company)
+		if err!= nil{
+			log.Fatalf("unable to scan the row %v",err)
+	        }
+	      stocks = append(stocks,stock)
+	}
+return stocks ,err
 }
 func updateStock(id int64, stock models.Stock) int64 {
-
+db := createConnection()
+	defer db.Close()
+	sqlStatement := `SELECT * FROM 	stocks`
 }
 func deleteStock(id int64) int64 {
 
